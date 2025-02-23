@@ -5,6 +5,8 @@ import 'package:home_asset_management/core/consts/us_states.dart';
 import 'package:home_asset_management/modules/homes/data/models/address_model.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
 
+import 'package:home_asset_management/modules/assets/data/enums/asset_type_enum.dart';
+import 'package:home_asset_management/modules/assets/data/model/asset_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Initializes Hive and registers adapters.
@@ -22,7 +24,10 @@ Future<void> initializeHive() async {
   Hive.registerAdapter(HomeModelAdapter());
   Hive.registerAdapter(AddressModelAdapter());
   Hive.registerAdapter(UsStateAdapter());
+  Hive.registerAdapter(AssetModelAdapter());
+  Hive.registerAdapter(AssetTypeEnumAdapter());
 
   // Open boxes
   await Hive.openBox<HomeModel>(HiveBoxes.homes);
+  await Hive.openBox<AssetModel>(HiveBoxes.assets);
 }

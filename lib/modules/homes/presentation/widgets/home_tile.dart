@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
+import 'package:home_asset_management/modules/homes/presentation/views/home_view.dart';
 import 'package:home_asset_management/modules/homes/presentation/views/manage_home_view.dart';
 
 /// A tile widget that displays a home's information and provides a menu for managing it.
@@ -14,9 +15,7 @@ class HomeTile extends StatelessWidget {
     return ListTile(
       title: Text(home.name),
       subtitle: Text(home.address.toString()),
-      onTap: () {
-        // TODO: Route to home view
-      },
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomeView(home))),
       trailing: MenuAnchor(
         builder: (BuildContext context, MenuController controller, Widget? child) {
           return IconButton(
