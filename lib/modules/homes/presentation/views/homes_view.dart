@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_asset_management/modules/homes/presentation/controllers/homes_controller.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
+import 'package:home_asset_management/modules/homes/presentation/views/manage_home_view.dart';
 import 'package:home_asset_management/modules/homes/presentation/widgets/home_tile.dart';
 
 /// A view for displaying a list of homes.
@@ -54,6 +55,11 @@ class _HomesViewState extends State<HomesView> {
             },
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ManageHomeView())),
+        tooltip: 'Add home',
+        child: const Icon(Icons.add),
       ),
     );
   }
