@@ -1,33 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:home_asset_management/core/helpers/hive.dart';
+import 'package:home_asset_management/modules/homes/presentation/views/homes_view.dart';
 
-void main() {
-  runApp(const MyApp());
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeHive();
+
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Home Asset Management',
+      navigatorKey: navigatorKey,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-      home: const MyHomePage(),
+      home: const HomesView(),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }
