@@ -19,4 +19,7 @@ abstract class IHomesRepository {
 
   /// Updates a home in the database.
   Future<Response<void>> updateHome(HomeModel home);
+
+  /// Deletes a home in the database.
+  Future<Response<void>> deleteHome(String id);
 }

@@ -7,6 +7,7 @@ import 'package:home_asset_management/core/widgets/toast/error.dart';
 import 'package:home_asset_management/core/widgets/toast/success.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
 import 'package:home_asset_management/modules/homes/domain/use_cases/create_home_use_case.dart';
+import 'package:home_asset_management/modules/homes/domain/use_cases/delete_home_use_case.dart';
 import 'package:home_asset_management/modules/homes/domain/use_cases/get_homes_use_case.dart';
 import 'package:home_asset_management/modules/homes/domain/use_cases/update_home_use_case.dart';
 
@@ -27,6 +28,7 @@ class HomesController extends Controller {
   final GetHomesUseCase _getHomesUseCase = GetHomesUseCase.instance;
   final CreateHomeUseCase _createHomeUseCase = CreateHomeUseCase.instance;
   final UpdateHomeUseCase _updateHomeUseCase = UpdateHomeUseCase.instance;
+  final DeleteHomeUseCase _deleteHomeUseCase = DeleteHomeUseCase.instance;
 
   /// The homes notifier represents the homes fetched from the database provided
   /// to the UI.
@@ -127,6 +129,43 @@ class HomesController extends Controller {
 
     // Success message
     SuccessToast('Home updated').show();
+  }
+
+  /// Deletes a home from the database and sync the homes notifier.
+  ///
+  /// Uses optimistic deletion to avoid showing a loading state when the home is
+  /// being deleted.
+  Future<void> deleteHome(String id) async {
+    // Find the index of the home to delete
+    final index = homesNotifier.value?.indexWhere((home) => home.id == id);
+
+    if (index == null || index == -1) return; // Ensure the home exists before proceeding
+
+    // Create a new list reference for proper UI updates
+    final List<HomeModel> updatedList = List.from(homesNotifier.value ?? []);
+
+    // Store the home in case we need to revert
+    final HomeModel temporaryHome = updatedList[index];
+
+    // Optimistic UI update: Remove home from list immediately
+    updatedList.removeAt(index);
+    homesNotifier.value = [...updatedList]; // Triggers UI update
+
+    // Perform the actual delete operation
+    final results = await _deleteHomeUseCase.execute(id);
+
+    if (results.isLeft()) {
+      // If deletion fails, revert back to previous state
+      updatedList.insert(index, temporaryHome);
+      homesNotifier.value = [...updatedList]; // Restore UI state
+
+      final errorMessage = results.fold((failure) => failure.message, (_) => 'Unable to delete home');
+      ErrorToast(errorMessage).show();
+      return;
+    }
+
+    // Success message
+    SuccessToast('Home deleted').show();
   }
 
   /// Disposes the homes notifier

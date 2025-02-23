@@ -49,7 +49,7 @@ class _HomesViewState extends State<HomesView> {
                 itemCount: homes.length,
                 itemBuilder: (context, index) {
                   final home = homes[index];
-                  return HomeTile(home);
+                  return HomeTile(home, onDeleteTap: () => homesController.deleteHome(home.id));
                 },
               );
             },

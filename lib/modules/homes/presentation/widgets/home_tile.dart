@@ -8,7 +8,10 @@ class HomeTile extends StatelessWidget {
   /// The home model to display.
   final HomeModel home;
 
-  const HomeTile(this.home, {super.key});
+  /// The callback function to be called when the delete button is pressed.
+  final VoidCallback onDeleteTap;
+
+  const HomeTile(this.home, {super.key, required this.onDeleteTap});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +39,19 @@ class HomeTile extends StatelessWidget {
                 () => Navigator.push(context, MaterialPageRoute(builder: (context) => ManageHomeView(home: home))),
             child: Row(children: [const Icon(Icons.edit), const SizedBox(width: 8), Text('Edit')]),
           ),
-          // TODO: Add delete button
+          MenuItemButton(
+            onPressed: onDeleteTap,
+            child: Row(
+              children: [
+                Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+                const SizedBox(width: 8),
+                Text(
+                  'Delete',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

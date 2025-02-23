@@ -66,4 +66,20 @@ class HomesRepository implements IHomesRepository {
       return left(Failure(message: 'Error updating home: ${e.toString()}'));
     }
   }
+
+  /// Deletes a home in the database.
+  @override
+  Future<Response<void>> deleteHome(String id) async {
+    try {
+      final home = _homesBox.get(id);
+      if (home == null) {
+        return left(Failure(message: 'Home not found'));
+      }
+
+      await _homesBox.delete(id);
+      return right(null);
+    } catch (e) {
+      return left(Failure(message: 'Error deleting home: ${e.toString()}'));
+    }
+  }
 }
