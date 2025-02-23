@@ -22,6 +22,17 @@ The deployed version can be found at https://home-asset-management.web.app/
 - **Local Storage:** Secure offline storage using Hive database
 - **Clean Architecture:** Modular and maintainable codebase structure
 
+### Supported Asset Types
+
+The application currently supports tracking of the following home assets:
+
+- Refrigerators
+- Air Conditioners
+- HVAC Systems
+- Solar Panels
+- EV Chargers
+- Batteries
+
 ## Getting Started
 
 To run Home Asset Management, ensure that your Flutter environment is set to version 3.29.0.
