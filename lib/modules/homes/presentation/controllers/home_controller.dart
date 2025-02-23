@@ -7,6 +7,7 @@ import 'package:home_asset_management/core/widgets/toast/success.dart';
 import 'package:home_asset_management/modules/assets/data/enums/asset_type_enum.dart';
 import 'package:home_asset_management/modules/assets/data/model/asset_model.dart';
 import 'package:home_asset_management/modules/assets/domain/use_cases/create_home_asset_use_case.dart';
+import 'package:home_asset_management/modules/assets/domain/use_cases/delete_home_assets_use_case.dart';
 import 'package:home_asset_management/modules/assets/domain/use_cases/get_home_assets_use_case.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
 
@@ -31,6 +32,7 @@ class HomeController extends Controller {
   /// Instances of the use cases.
   final GetAssetsUseCase _getAssetsUseCase = GetAssetsUseCase.instance;
   final CreateHomeAssetUseCase _createHomeAssetUseCase = CreateHomeAssetUseCase.instance;
+  final DeleteHomeAssetUseCase _deleteHomeAssetUseCase = DeleteHomeAssetUseCase.instance;
 
   /// The home notifier represents the home fetched from the database provided
   /// to the UI.
@@ -87,5 +89,39 @@ class HomeController extends Controller {
     assetsNotifier.value = updatedList; // Triggers UI update
 
     SuccessToast('Home asset added').show();
+  }
+
+  /// Deletes the asset from the database.
+  Future<void> deleteAsset(String assetId) async {
+    // Find the index of the home to delete
+    final index = assetsNotifier.value?.indexWhere((asset) => asset.id == assetId);
+
+    if (index == null || index == -1) return; // Ensure the home exists before proceeding
+
+    // Create a new list reference for proper UI updates
+    final List<AssetModel> updatedList = List.from(assetsNotifier.value ?? []);
+
+    // Store the home in case we need to revert
+    final AssetModel temporaryAsset = updatedList[index];
+
+    // Optimistic UI update: Remove home from list immediately
+    updatedList.removeAt(index);
+    assetsNotifier.value = [...updatedList]; // Triggers UI update
+
+    // Perform the actual delete operation
+    final results = await _deleteHomeAssetUseCase.execute(assetId);
+
+    if (results.isLeft()) {
+      // If deletion fails, revert back to previous state
+      updatedList.insert(index, temporaryAsset);
+      assetsNotifier.value = [...updatedList]; // Restore UI state
+
+      final errorMessage = results.fold((failure) => failure.message, (_) => 'Unable to delete home asset');
+      ErrorToast(errorMessage).show();
+      return;
+    }
+
+    // Success message
+    SuccessToast('Asset deleted').show();
   }
 }

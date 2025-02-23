@@ -95,7 +95,7 @@ class _HomeViewState extends State<HomeView> {
                     itemCount: assets.length,
                     itemBuilder: (context, index) {
                       final asset = assets[index];
-                      return AssetTile(asset.type);
+                      return AssetTile(asset.type, onDeleteTap: () => _homeController.deleteAsset(asset.id));
                     },
                   );
                 },
