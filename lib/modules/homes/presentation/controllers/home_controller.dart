@@ -3,7 +3,10 @@ import 'package:home_asset_management/core/controller/controller.dart';
 import 'package:home_asset_management/core/controller/controller_injector.dart';
 import 'package:home_asset_management/core/controller/controller_instance.dart';
 import 'package:home_asset_management/core/widgets/toast/error.dart';
+import 'package:home_asset_management/core/widgets/toast/success.dart';
+import 'package:home_asset_management/modules/assets/data/enums/asset_type_enum.dart';
 import 'package:home_asset_management/modules/assets/data/model/asset_model.dart';
+import 'package:home_asset_management/modules/assets/domain/use_cases/create_home_asset_use_case.dart';
 import 'package:home_asset_management/modules/assets/domain/use_cases/get_home_assets_use_case.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
 
@@ -27,6 +30,7 @@ class HomeController extends Controller {
 
   /// Instances of the use cases.
   final GetAssetsUseCase _getAssetsUseCase = GetAssetsUseCase.instance;
+  final CreateHomeAssetUseCase _createHomeAssetUseCase = CreateHomeAssetUseCase.instance;
 
   /// The home notifier represents the home fetched from the database provided
   /// to the UI.
@@ -54,5 +58,34 @@ class HomeController extends Controller {
     }
 
     assetsNotifier.value = results.getOrElse(() => []);
+  }
+
+  /// Creates a new asset for the home.
+  ///
+  /// The asset is created using the [CreateHomeAssetUseCase] use case.
+  ///
+  /// The asset is added to the list of assets and the UI is updated to reflect
+  /// the new asset.
+  Future<void> createAsset(AssetTypeEnum assetType) async {
+    final results = await _createHomeAssetUseCase.execute(home.id, assetType);
+
+    // Handle failure case
+    if (results.isLeft()) {
+      final errorMessage = results.fold((failure) => failure.message, (_) => 'Unable to create home asset');
+      ErrorToast(errorMessage).show();
+      return;
+    }
+
+    // Get the created home asset or return
+    final newHomeAsset = results.getOrElse(() {
+      throw Exception('Error adding home asset');
+    });
+
+    // Ensure notifier has a valid list before updating
+    final List<AssetModel> updatedList = List.from(assetsNotifier.value ?? []);
+    updatedList.add(newHomeAsset);
+    assetsNotifier.value = updatedList; // Triggers UI update
+
+    SuccessToast('Home asset added').show();
   }
 }

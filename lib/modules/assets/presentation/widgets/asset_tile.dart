@@ -7,14 +7,13 @@ class AssetTile extends StatelessWidget {
   /// The asset type.
   final AssetTypeEnum asset;
 
-  const AssetTile(this.asset, {super.key});
+  /// The callback function to be called when the tile is tapped.
+  final VoidCallback? onTap;
+
+  const AssetTile(this.asset, {super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(asset.icon),
-      title: Text(asset.title),
-      // TODO: Add delete button
-    );
+    return ListTile(leading: Icon(asset.icon), title: Text(asset.title), onTap: onTap);
   }
 }

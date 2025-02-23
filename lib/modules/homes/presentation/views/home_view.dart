@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_asset_management/modules/assets/data/enums/asset_type_enum.dart';
 import 'package:home_asset_management/modules/assets/data/model/asset_model.dart';
+import 'package:home_asset_management/modules/assets/presentation/views/search_asset_view.dart';
 import 'package:home_asset_management/modules/assets/presentation/widgets/asset_tile.dart';
 import 'package:home_asset_management/modules/homes/data/models/home_model.dart';
 import 'package:home_asset_management/modules/homes/presentation/controllers/home_controller.dart';
@@ -33,6 +35,22 @@ class _HomeViewState extends State<HomeView> {
 
     // Update the home controller with the updated home
     _homeController.homeNotifier.value = updatedHome;
+  }
+
+  /// Handles the search asset button.
+  ///
+  /// Navigates to the search asset view and updates the home controller with
+  /// the updated home.
+  Future<void> _handleSearchAsset() async {
+    // Get the updated home from the manage home view
+    final selectedAsset = await Navigator.push<AssetTypeEnum?>(
+      context,
+      MaterialPageRoute(builder: (context) => SearchAssetView()),
+    );
+    if (selectedAsset == null) return;
+
+    // Add asset to home
+    _homeController.createAsset(selectedAsset);
   }
 
   @override
@@ -83,6 +101,11 @@ class _HomeViewState extends State<HomeView> {
                 },
               ),
             ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _handleSearchAsset,
+            tooltip: 'Add Asset',
+            child: const Icon(Icons.add),
           ),
         );
       },
